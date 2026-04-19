@@ -1,2 +1,3 @@
 *.ui
-config.json
+config.jso
+__pycache__

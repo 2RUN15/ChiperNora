@@ -40,3 +40,33 @@ def path_join(file_paths: list):
         return full_path
     except Exception as e:
         raise e
+
+def create_conf_json(default: bool):
+    try:
+        api_conf = {
+            "active_engine": "deepl",
+            "engines": {
+                "deepl": {
+                    "api_key": "SENIN_DEEPL_KEYIN"
+                },
+                "google": {
+                    "api_key": "SENIN_GOOGLE_KEYIN"
+                },
+                "mymemory": {
+                    "email": "senin.mailin@gmail.com"
+                }
+            },
+            "settings": {
+                "save_file": "ciphernora_vault.txt",
+                "word_limit": 3
+            }
+        }
+        
+        
+        conf_path = path_join(["API","config.json"])
+        if not os.path.isfile(conf_path) or default:
+            json_save(conf_path, api_conf)
+        else:
+            return
+    except Exception as e:
+        raise e
