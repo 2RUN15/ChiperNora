@@ -47,18 +47,18 @@ def create_conf_json(default: bool):
             "active_engine": "deepl",
             "engines": {
                 "deepl": {
-                    "api_key": "SENIN_DEEPL_KEYIN"
+                    "api_key": ""
                 },
                 "google": {
-                    "api_key": "SENIN_GOOGLE_KEYIN"
+                    "api_key": ""
                 },
                 "mymemory": {
-                    "email": "senin.mailin@gmail.com"
+                    "email": ""
                 }
             },
             "settings": {
-                "save_file": "ciphernora_vault.txt",
-                "word_limit": 3
+                "save_file": "",
+                "word_limit": 1
             }
         }
         

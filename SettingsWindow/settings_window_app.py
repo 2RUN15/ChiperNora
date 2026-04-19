@@ -2,6 +2,7 @@ from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
 from SettingsWindow.settings_window_ui import Ui_SettingsDialog
 from actions.func_main import file_read, path_join, json_read, json_save, create_conf_json
+from SettingsWindow.funcs import change_engine, re_change_engine
 from actions.msgbox import ReturnErr, WarningMess
 from datapack import warningmsg
 
@@ -23,17 +24,15 @@ class SettingsWindow(QWidget):
         #Butto_Actions
         self.ui.btn_save.clicked.connect(self.save_config)
         self.ui.reset_set_btn.clicked.connect(self.reset_settings)
-    
+        self.ui.cmb_engine.currentIndexChanged.connect(self.cmb_engine_api_change)
+        
+        #ViewConf
+        self.cmb_engine_api_change(0)
+        
     def save_config(self):
         try:
-                
             cmb_engine = self.ui.cmb_engine.currentIndex()
-            if cmb_engine == 0:
-                cmb_engine = "mymemory"
-            elif cmb_engine == 1:
-                cmb_engine = "deepl"
-            elif cmb_engine == 2:
-                cmb_engine == "google"
+            cmb_engine = change_engine(cmb_engine)
         
             api_key = self.ui.txt_api_key.text()
             if not api_key:
@@ -42,7 +41,10 @@ class SettingsWindow(QWidget):
             word_limit = self.ui.spin_word_limit.text()
 
             self.api_conf["active_engine"] = cmb_engine
-            self.api_conf["engines"][f"{cmb_engine}"]["api_key"] = api_key
+            if cmb_engine == "mymemory":
+                self.api_conf["engines"][f"{cmb_engine}"]["email"] = api_key
+            else:
+                self.api_conf["engines"][f"{cmb_engine}"]["api_key"] = api_key
             self.api_conf["settings"]["word_limit"] = word_limit
             
             json_save(self.api_config_path, self.api_conf)
@@ -62,3 +64,15 @@ class SettingsWindow(QWidget):
         )
         warningmsg_win = WarningMess(warninmess_data)
         warningmsg_win.exec()
+    
+    def cmb_engine_api_change(self, index):
+        cmb_engine = change_engine(index)
+        
+        if cmb_engine == "mymemory":
+            api_key = self.api_conf["engines"][f"{cmb_engine}"]["email"]    
+        else:
+            api_key = self.api_conf["engines"][f"{cmb_engine}"]["api_key"]
+            
+        word_limit = self.api_conf["settings"]["word_limit"]
+        self.ui.txt_api_key.setText(api_key)
+        self.ui.spin_word_limit.setValue(int(word_limit))
