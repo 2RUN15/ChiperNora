@@ -14,8 +14,7 @@ def json_save(file_path, data):
 def json_read(file_path):
     try:
         with open(file_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-        return data
+            return json.load(f)
     except Exception as e:
         raise e
 
@@ -40,6 +39,41 @@ def path_join(file_paths: list):
         return full_path
     except Exception as e:
         raise e
+    
+def get_conf_api_json():
+    try:
+        file_path = path_join(["API","config.json"])
+        return file_path
+    except Exception as e:
+        raise e
+
+def get_active_engine():
+    try:
+        file_path = get_conf_api_json()
+        file = json_read(file_path)
+        engine = file["active_engine"]
+        
+        return engine
+    except Exception as e:
+        raise e
+
+def get_current_api():
+    try:
+        active_engine = get_active_engine()
+        file_path = get_conf_api_json()
+        read_file = json_read(file_path)
+        engines = read_file["engines"]
+        
+        if active_engine == "deepl":
+            return engines["deepl"]["api_key"]
+        elif active_engine == "google":
+            return engines["google"]["api_key"]
+        else:
+            return engines["mymemory"]["email"]
+        
+        return 
+    except Exception as e:
+        raise e 
 
 def create_conf_json(default: bool):
     try:
@@ -70,3 +104,4 @@ def create_conf_json(default: bool):
             return
     except Exception as e:
         raise e
+

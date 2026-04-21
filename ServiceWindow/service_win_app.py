@@ -1,8 +1,9 @@
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
 from PyQt6.QtGui import QIcon, QAction, QPixmap
-from actions.func_main import path_join
+from actions.func_main import path_join, get_active_engine
 from SettingsWindow.settings_window_app import SettingsWindow
+from API.translate_api.deepl_api import DeeplAPI
 
 class ServiceWindow:
     def __init__(self):
@@ -49,13 +50,20 @@ class ServiceWindow:
         self.tray.setContextMenu(self.menu)
         self.tray.show()
         
-        #Remember Choice
+        #Threads
+        self.active_engine = get_active_engine()
+        if self.active_engine == "deepl":
+            self.worker = DeeplAPI()
+            self.worker.start()
         
     def _on_settings_closed(self):
         self.settingswin = None
         
     def app_stat(self, boolval):
-        pass
+        if boolval and self.active_engine == "deepl":
+            self.worker.start()
+        elif not boolval and self.active_engine == "deepl":
+            self.worker.stop()
     
     def open_settings(self):
         if hasattr(self, "settingswin") and self.settingswin is not None:
@@ -73,3 +81,4 @@ class ServiceWindow:
     
     def _cloesd_settings(self):
         self.settingswin = None
+    

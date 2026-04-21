@@ -4,13 +4,17 @@ from SettingsWindow.settings_window_ui import Ui_SettingsDialog
 from actions.func_main import file_read, path_join, json_read, json_save, create_conf_json
 from SettingsWindow.funcs import change_engine, re_change_engine
 from actions.msgbox import ReturnErr, WarningMess
-from datapack import warningmsg
+from actions.dialogs import chose_file
+from SettingsWindow.settings_msgbox import *
 
 class SettingsWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.ui = Ui_SettingsDialog()
         self.ui.setupUi(self)
+        
+        #EmptyValues
+        self.save_location = ""
         
         #Style
         self.style_path = path_join(["SettingsWindow","style.qss"])
@@ -25,6 +29,7 @@ class SettingsWindow(QWidget):
         self.ui.btn_save.clicked.connect(self.save_config)
         self.ui.reset_set_btn.clicked.connect(self.reset_settings)
         self.ui.cmb_engine.currentIndexChanged.connect(self.cmb_engine_api_change)
+        self.ui.choose_file_btn.clicked.connect(self.get_file_location)
         
         #ViewConf
         self.cmb_engine_api_change(0)
@@ -36,7 +41,10 @@ class SettingsWindow(QWidget):
         
             api_key = self.ui.txt_api_key.text()
             if not api_key:
-                return self.warn_api_key()
+                return warn_api_key()
+            
+            if not self.save_location:
+                return warn_save_loc
             
             word_limit = self.ui.spin_word_limit.text()
 
@@ -57,14 +65,6 @@ class SettingsWindow(QWidget):
     def reset_settings(self):
         create_conf_json(True)
     
-    def warn_api_key(self):
-        warninmess_data = warningmsg(
-            window_tittle="EMPTY API",
-            text="Please make sure you enter your API key."
-        )
-        warningmsg_win = WarningMess(warninmess_data)
-        warningmsg_win.exec()
-    
     def cmb_engine_api_change(self, index):
         cmb_engine = change_engine(index)
         
@@ -76,3 +76,7 @@ class SettingsWindow(QWidget):
         word_limit = self.api_conf["settings"]["word_limit"]
         self.ui.txt_api_key.setText(api_key)
         self.ui.spin_word_limit.setValue(int(word_limit))
+    
+    def get_file_location(self):
+        self.save_location = chose_file()
+    

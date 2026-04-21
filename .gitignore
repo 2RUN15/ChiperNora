@@ -1,4 +1,4 @@
 *.ui
-config.jso
+config.json
 **/__pycache__/
 .DS_Store
