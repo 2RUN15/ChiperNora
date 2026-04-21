@@ -75,6 +75,15 @@ def get_current_api():
     except Exception as e:
         raise e 
 
+def get_save_location():
+    try:
+        file_path = get_conf_api_json()
+        read_file = json_read(file_path)
+        
+        return read_file["settings"]["save_file"]
+    except Exception as e:
+        raise e
+
 def create_conf_json(default: bool):
     try:
         api_conf = {
@@ -105,3 +114,9 @@ def create_conf_json(default: bool):
     except Exception as e:
         raise e
 
+def write_file(file_path: str, full_word: str):
+    try:
+        with open (file_path, "a", encoding="utf-8") as f:
+            f.write(full_word)
+    except Exception as e:
+        raise e

@@ -44,7 +44,7 @@ class SettingsWindow(QWidget):
                 return warn_api_key()
             
             if not self.save_location:
-                return warn_save_loc
+                return warn_save_loc()
             
             word_limit = self.ui.spin_word_limit.text()
 
@@ -54,6 +54,8 @@ class SettingsWindow(QWidget):
             else:
                 self.api_conf["engines"][f"{cmb_engine}"]["api_key"] = api_key
             self.api_conf["settings"]["word_limit"] = word_limit
+            
+            self.api_conf["settings"]["save_file"] = self.save_location
             
             json_save(self.api_config_path, self.api_conf)
             self.close()
@@ -74,9 +76,12 @@ class SettingsWindow(QWidget):
             api_key = self.api_conf["engines"][f"{cmb_engine}"]["api_key"]
             
         word_limit = self.api_conf["settings"]["word_limit"]
+        save_location = self.api_conf["settings"]["save_file"]
+        
         self.ui.txt_api_key.setText(api_key)
         self.ui.spin_word_limit.setValue(int(word_limit))
+        self.ui.file_location_line.setText(save_location)
     
     def get_file_location(self):
-        self.save_location = chose_file()
-    
+        self.save_location = chose_file(self)
+        self.ui.file_location_line.setText(self.save_location)
