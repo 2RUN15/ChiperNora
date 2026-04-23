@@ -8,6 +8,8 @@ from actions.dialogs import chose_file
 from SettingsWindow.settings_msgbox import *
 
 class SettingsWindow(QWidget):
+    settings_changed = pyqtSignal(bool)
+    
     def __init__(self):
         super().__init__()
         self.ui = Ui_SettingsDialog()
@@ -58,6 +60,8 @@ class SettingsWindow(QWidget):
             self.api_conf["settings"]["save_file"] = self.save_location
             
             json_save(self.api_config_path, self.api_conf)
+            
+            self.settings_changed.emit(True)
             self.close()
         
         except Exception as e:

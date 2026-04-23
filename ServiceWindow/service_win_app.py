@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import *
 from PyQt6.QtGui import QIcon, QAction, QPixmap
 from actions.func_main import path_join, get_active_engine
 from SettingsWindow.settings_window_app import SettingsWindow
-from API.translate_api.deepl_api import DeeplAPI
+from API.translate_api.translate_app_api import DeeplAPI, GoogleAPI
 
 class ServiceWindow:
     def __init__(self):
@@ -52,9 +52,7 @@ class ServiceWindow:
         
         #Threads
         self.active_engine = get_active_engine()
-        if self.active_engine == "deepl":
-            self.worker = DeeplAPI()
-            self.worker.start()
+        self.strat_worker()
         
     def _on_settings_closed(self):
         self.settingswin = None
@@ -63,6 +61,11 @@ class ServiceWindow:
         if boolval and self.active_engine == "deepl":
             self.worker.start()
         elif not boolval and self.active_engine == "deepl":
+            self.worker.stop()
+        
+        if boolval and self.active_engine == "google":
+            self.worker.start()
+        elif not boolval and self.active_engine == "google":
             self.worker.stop()
     
     def open_settings(self):
@@ -75,10 +78,25 @@ class ServiceWindow:
         
         self.settingswin.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         
-        self.settingswin.destroyed.connect(self._cloesd_settings) 
+        self.settingswin.destroyed.connect(self._cloesd_settings)
+        self.settingswin.settings_changed.connect(self.change_settings)
         
         self.settingswin.show()
     
     def _cloesd_settings(self):
         self.settingswin = None
     
+    def change_settings(self, boolValue):
+        if boolValue:
+            self.active_engine = get_active_engine()
+            self.strat_worker()
+
+    def strat_worker(self):
+        if self.active_engine == "deepl":
+            self.worker = DeeplAPI()
+            self.worker.start()
+            self.worker.update_settings()
+        elif self.active_engine == "google":
+            self.worker = GoogleAPI()
+            self.worker.start()
+            self.worker.update_settings()
