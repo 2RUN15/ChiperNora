@@ -4,10 +4,27 @@ from PyQt6.QtGui import QIcon, QAction, QPixmap
 from actions.func_main import path_join, get_active_engine
 from SettingsWindow.settings_window_app import SettingsWindow
 from API.translate_api.translate_app_api import DeeplAPI, GoogleAPI
+import platform
+
+def set_mac_dock_icon_visible(visible):
+    if platform.system() == "Darwin":
+        try:
+            from AppKit import NSApp, NSApplicationActivationPolicyRegular, NSApplicationActivationPolicyAccessory
+            
+            if visible:
+                NSApp.setActivationPolicy_(NSApplicationActivationPolicyRegular)
+            
+            else:
+                NSApp.setActivationPolicy_(NSApplicationActivationPolicyAccessory)
+        except ImportError:
+            pass
 
 class ServiceWindow:
     def __init__(self):
         super().__init__()
+        
+        #DockVisible
+        set_mac_dock_icon_visible(False)
         
         #NoneValus
         self.settingswin = None
@@ -25,7 +42,6 @@ class ServiceWindow:
         self.action_actv = QAction("Activate")
         self.action_exit = QAction("Exit")
         self.action_settings = QAction("Settings")
-    
     
         #Actions Bağlantıları
         
@@ -69,6 +85,7 @@ class ServiceWindow:
             self.worker.stop()
     
     def open_settings(self):
+        set_mac_dock_icon_visible(True)
         if hasattr(self, "settingswin") and self.settingswin is not None:
             self.settingswin.activateWindow()
             self.settingswin.raise_()
@@ -84,6 +101,7 @@ class ServiceWindow:
         self.settingswin.show()
     
     def _cloesd_settings(self):
+        set_mac_dock_icon_visible(False)
         self.settingswin = None
     
     def change_settings(self, boolValue):

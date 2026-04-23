@@ -15,9 +15,6 @@ class SettingsWindow(QWidget):
         self.ui = Ui_SettingsDialog()
         self.ui.setupUi(self)
         
-        #EmptyValues
-        self.save_location = ""
-        
         #Style
         self.style_path = path_join(["SettingsWindow","style.qss"])
         self.styleqss = file_read(self.style_path)
@@ -35,6 +32,9 @@ class SettingsWindow(QWidget):
         
         #ViewConf
         self.cmb_engine_api_change(0)
+        
+        #DefaultValues
+        self.save_location = self.api_conf["settings"]["save_file"]
         
     def save_config(self):
         try:
