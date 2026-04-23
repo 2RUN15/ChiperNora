@@ -1,0 +1,6 @@
+AppKit==0.2.8
+deepl==1.30.0
+pyobjc_framework_cocoa==12.1
+PyQt6==6.11.0
+pyqt6_sip==13.10.2
+Requests==2.33.1
