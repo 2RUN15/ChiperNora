@@ -1,5 +1,5 @@
 import deepl
-from PyQt6.QtCore import QThread
+from PyQt6.QtCore import pyqtSignal, QObject
 from PyQt6.QtWidgets import *
 from actions.func_main import get_conf_api_json, json_read,get_current_api, write_file, get_save_location
 from actions.copylisten import CopyListen
@@ -7,7 +7,7 @@ from actions.msgbox import ReturnErr
 from actions.popup import TranslationPopup
 import requests
 
-class DeeplAPI(QThread):
+class DeeplAPI(QObject):
     def __init__(self):
         super().__init__()
         
@@ -45,7 +45,7 @@ class DeeplAPI(QThread):
             err_msgboc = ReturnErr(e)
             err_msgboc.exec()
 
-class GoogleAPI(QThread):
+class GoogleAPI(QObject):
     def __init__(self):
         super().__init__()
         

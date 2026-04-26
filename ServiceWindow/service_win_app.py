@@ -1,7 +1,7 @@
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
 from PyQt6.QtGui import QIcon, QAction, QPixmap
-from actions.func_main import path_join, get_active_engine
+from actions.func_main import path_join, get_active_engine, get_first_open
 from SettingsWindow.settings_window_app import SettingsWindow
 from API.translate_api.translate_app_api import DeeplAPI, GoogleAPI
 import platform
@@ -66,9 +66,15 @@ class ServiceWindow:
         self.tray.setContextMenu(self.menu)
         self.tray.show()
         
+        #First Open
+        self.first_open = get_first_open()
+                
         #Threads
-        self.active_engine = get_active_engine()
-        self.strat_worker()
+        if not self.first_open:
+            self.open_settings()
+        else:
+            self.active_engine = get_active_engine()
+            self.start_worker()
         
     def _on_settings_closed(self):
         self.settingswin = None
@@ -86,6 +92,7 @@ class ServiceWindow:
     
     def open_settings(self):
         set_mac_dock_icon_visible(True)
+        self.worker.stop()
         if hasattr(self, "settingswin") and self.settingswin is not None:
             self.settingswin.activateWindow()
             self.settingswin.raise_()
@@ -103,18 +110,21 @@ class ServiceWindow:
     def _cloesd_settings(self):
         set_mac_dock_icon_visible(False)
         self.settingswin = None
+        self.worker.start()
     
     def change_settings(self, boolValue):
         if boolValue:
             self.active_engine = get_active_engine()
-            self.strat_worker()
+            self.start_worker()
 
-    def strat_worker(self):
+    def start_worker(self):
+        if hasattr(self, "worker") and self.worker:
+            self.worker.stop()
+
         if self.active_engine == "deepl":
             self.worker = DeeplAPI()
-            self.worker.start()
-            self.worker.update_settings()
         elif self.active_engine == "google":
             self.worker = GoogleAPI()
-            self.worker.start()
-            self.worker.update_settings()
+
+        self.worker.update_settings()
+        self.worker.start()

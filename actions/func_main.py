@@ -70,10 +70,18 @@ def get_current_api():
             return engines["google"]["api_key"]
         else:
             return engines["mymemory"]["email"]
-        
-        return 
     except Exception as e:
         raise e 
+
+def get_first_open():
+    try:
+        file_path = get_conf_api_json()
+        read_file = json_read(file_path)
+        first_open = read_file["settings"]["first_open"]
+        
+        return first_open
+    except Exception as e:
+        raise e
 
 def get_save_location():
     try:
@@ -101,6 +109,7 @@ def create_conf_json(default: bool):
             },
             "settings": {
                 "save_file": "",
+                "first_open": False,
                 "word_limit": 1
             }
         }
@@ -116,7 +125,10 @@ def create_conf_json(default: bool):
 
 def write_file(file_path: str, full_word: str):
     try:
-        with open (file_path, "a", encoding="utf-8") as f:
-            f.write(full_word)
+        _,extention = os.path.splitext(file_path)
+        if extention == ".txt":
+            with open (file_path, "a", encoding="utf-8") as f:
+                f.write(full_word)
+                
     except Exception as e:
         raise e

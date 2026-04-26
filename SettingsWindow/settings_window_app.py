@@ -48,6 +48,10 @@ class SettingsWindow(QWidget):
             if not self.save_location:
                 return warn_save_loc()
             
+            first_open = self.api_conf["settings"]["first_open"]
+            if not first_open:
+                self.api_conf["settings"]["first_open"] = True
+            
             word_limit = self.ui.spin_word_limit.text()
 
             self.api_conf["active_engine"] = cmb_engine

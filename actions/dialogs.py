@@ -5,7 +5,7 @@ def chose_file(self):
         self,
         "Choose File",
         "",
-        "TXT Files (*.txt);;ALL Files (*.*)"
+        "TXT Files (*.txt);;MD Files (*.md);;ALL Files (*.*)"
     )
     
     if file_path:
