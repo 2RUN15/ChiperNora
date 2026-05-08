@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import QMessageBox
 from datapack import warningmsg
 
+#Hata mesajı fırlatır
 class ReturnErr(QMessageBox):
     def __init__(self,error):
         self.error = error
@@ -10,6 +11,7 @@ class ReturnErr(QMessageBox):
         self.setStandardButtons(self.StandardButton.Ok)
         self.setIcon(self.Icon.Critical)
 
+#Uyarı mesajı fırlatır
 class WarningMess(QMessageBox):
     def __init__(self, conf: warningmsg):
         super().__init__()

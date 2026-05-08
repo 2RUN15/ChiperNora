@@ -1,11 +1,16 @@
 import deepl
 from PyQt6.QtCore import pyqtSignal, QObject
 from PyQt6.QtWidgets import *
-from actions.func_main import get_conf_api_json, json_read,get_current_api, write_file, get_save_location
+from actions.func_main import get_conf_api_json, json_read, get_current_api, write_file, get_save_location, get_datetime_today, path_join,check_is_folder
 from actions.copylisten import CopyListen
 from actions.msgbox import ReturnErr
 from actions.popup import TranslationPopup
 import requests
+from API.translate_api.dict_process import get_word_dict_info
+from actions.bashscripts import bash_wget
+import os
+
+DATE_TODAY = get_datetime_today()
 
 class DeeplAPI(QObject):
     def __init__(self):
@@ -13,10 +18,12 @@ class DeeplAPI(QObject):
         
         self.auth_key = get_current_api()
         self.save_loc = get_save_location()
-        
+        self.save_folder = path_join([os.path.dirname(self.save_loc),"attachments"])
+        check_is_folder(self.save_folder)
         
         self.translator = deepl.Translator(self.auth_key)
         
+        #Kopyalanan sözcükleri dinleme
         self.worker = CopyListen()
         self.worker.link_found.connect(self.word_found)
         self.worker.start()
@@ -30,16 +37,26 @@ class DeeplAPI(QObject):
         self.worker.stop()
 
     def update_settings(self):
+        #Ayarları günceller
         self.auth_key = get_current_api()
         self.save_loc = get_save_location()
     
     def word_found(self, word):
+        #Kelimeyi çevirir
         try:
             translated = self.translator.translate_text(word, target_lang="TR").text
-            full_translate = f"Deepl | {word} | {translated}\n"
+            full_translated = {"word": word, "translated": translated}
             self.popup.show_at_cursor(translated)
             
-            write_file(self.save_loc, full_translate)
+            word_dict = get_word_dict_info(word)
+            folder_path = path_join([self.save_loc, ".."])
+            url = word_dict[-1]["audio"]
+            
+            #Okunuşunu indirir
+            bash_wget(folder_path, url)
+
+            #Dosyaya yazar
+            write_file(self.save_loc, full_translated, DATE_TODAY)
             
         except Exception as e:
             err_msgboc = ReturnErr(e)

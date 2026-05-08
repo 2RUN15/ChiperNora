@@ -35,6 +35,7 @@ class SettingsWindow(QWidget):
         
         #DefaultValues
         self.save_location = self.api_conf["settings"]["save_file"]
+        self.file_format = self.get_file_format()
         
     def save_config(self):
         try:
@@ -60,6 +61,9 @@ class SettingsWindow(QWidget):
             else:
                 self.api_conf["engines"][f"{cmb_engine}"]["api_key"] = api_key
             self.api_conf["settings"]["word_limit"] = word_limit
+            
+            self.file_format = self.get_file_format()
+            self.api_conf["settings"]["format"] = self.file_format
             
             self.api_conf["settings"]["save_file"] = self.save_location
             
@@ -93,3 +97,10 @@ class SettingsWindow(QWidget):
     def get_file_location(self):
         self.save_location = chose_file(self)
         self.ui.file_location_line.setText(self.save_location)
+    
+    def get_file_format(self):
+        format_index = self.ui.format_comboBox.currentIndex()
+        if format_index == 0:
+            return ".md"
+        else:
+            return ".txt"

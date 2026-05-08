@@ -6,6 +6,7 @@ from SettingsWindow.settings_window_app import SettingsWindow
 from API.translate_api.translate_app_api import DeeplAPI, GoogleAPI
 import platform
 
+#Python ikonunu kaldırır
 def set_mac_dock_icon_visible(visible):
     if platform.system() == "Darwin":
         try:

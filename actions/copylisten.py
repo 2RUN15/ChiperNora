@@ -2,6 +2,7 @@ from PyQt6.QtCore import QObject, pyqtSignal, QTimer
 from PyQt6.QtWidgets import QApplication
 
 class CopyListen(QObject):
+    #Bulduğu linki sinyal ile gönderme
     link_found = pyqtSignal(str)
     
     def __init__(self):
@@ -9,8 +10,11 @@ class CopyListen(QObject):
         self.board = QApplication.clipboard()
         self.last_link = ""
         self.is_activate = False
+        
+        #Kopyalama bağlantısı
         self.board.dataChanged.connect(self.send_signal)
         
+        #Şimdilik Timer ile kontrol etme
         self.timer = QTimer()
         self.timer.timeout.connect(self.send_signal)
     

@@ -1,5 +1,6 @@
 from PyQt6.QtWidgets import QFileDialog
 
+#Dosya Seçme
 def chose_file(self):
     file_path,_ = QFileDialog.getOpenFileName(
         self,
@@ -11,6 +12,7 @@ def chose_file(self):
     if file_path:
         return file_path
 
+#Klasör Seçme
 def chose_folder(self):
     folder_path = QFileDialog.getExistingDirectory(self,"Choose Folder")
     
