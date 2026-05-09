@@ -93,7 +93,8 @@ class ServiceWindow:
     
     def open_settings(self):
         set_mac_dock_icon_visible(True)
-        self.worker.stop()
+        if hasattr(self, "worker") and self.worker:         
+            self.worker.stop()
         if hasattr(self, "settingswin") and self.settingswin is not None:
             self.settingswin.activateWindow()
             self.settingswin.raise_()
@@ -111,7 +112,8 @@ class ServiceWindow:
     def _cloesd_settings(self):
         set_mac_dock_icon_visible(False)
         self.settingswin = None
-        self.worker.start()
+        if hasattr(self, "worker") and self.worker:         
+            self.worker.start()
     
     def change_settings(self, boolValue):
         if boolValue:

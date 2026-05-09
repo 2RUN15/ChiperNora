@@ -4,6 +4,7 @@ from datetime import datetime
 from API.translate_api.dict_process import get_word_dict_info
 from actions.bashscripts import bash_wget
 from datapack import WirteFilePack
+import platform
 
 MAIN_PATH = os.path.abspath(__file__)
 BASE_DIR = os.path.dirname(MAIN_PATH)
