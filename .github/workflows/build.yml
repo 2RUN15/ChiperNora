@@ -40,8 +40,17 @@ jobs:
       - name: macOS DMG Oluştur
         if: matrix.os == 'macos-latest'
         run: |
-          npm install -g create-dmg
-          create-dmg --overwrite --skip-jenkins --identity "none" "dist/ChiperNora.dmg" "dist/ChiperNora.app/" || true
+          # 1. DMG'nin içinin derli toplu görünmesi için geçici bir klasör oluşturuyoruz
+          mkdir -p dist/dmg
+          
+          # 2. PyInstaller'ın ürettiği Mac uygulamasını bu klasöre kopyalıyoruz
+          cp -r "dist/ChiperNora.app" dist/dmg/
+          
+          # 3. Sürükle-bırak yapabilmek için Applications klasörünün kısayolunu ekliyoruz
+          ln -s /Applications dist/dmg/Applications
+          
+          # 4. Apple'ın kendi yerel aracıyla (sertifika sormadan) DMG dosyasını paketliyoruz
+          hdiutil create -volname "ChiperNora" -srcfolder dist/dmg -ov -format UDZO "dist/ChiperNora.dmg"
 
       # --- 3. LINUX DEB SETUP ---
       - name: Linux .deb Paketi Oluştur
