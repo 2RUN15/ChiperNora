@@ -32,9 +32,9 @@ ArchitecturesInstallIn64BitMode=x64compatible
 DisableProgramGroupPage=yes
 ; Remove the following line to run in administrative install mode (install for all users).
 PrivilegesRequired=lowest
-OutputDir=C:\Users\Turan\Desktop
+OutputDir= .
 OutputBaseFilename=CipherNora_Setup_v1
-SetupIconFile=C:\Users\Turan\Desktop\Projects\ChiperNora\icons\mainico.ico
+SetupIconFile=icons\setup.ico
 SolidCompression=yes
 WizardStyle=modern windows11
 
@@ -46,8 +46,8 @@ Name: "turkish"; MessagesFile: "compiler:Languages\Turkish.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\Users\Turan\Desktop\Projects\ChiperNora\dist\ChiperNora\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Turan\Desktop\Projects\ChiperNora\dist\ChiperNora\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "dist\ChiperNora\ChiperNora.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "dist\ChiperNora\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
