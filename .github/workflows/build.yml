@@ -66,6 +66,6 @@ jobs:
         with:
           name: Kurulum-Dosyalari-${{ matrix.os }}
           path: |
-            **/*.exe
-            **/*.dmg
-            **/*.deb
+            dist/*.exe
+            dist/*.dmg
+            dist/*.deb
