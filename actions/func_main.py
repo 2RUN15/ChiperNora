@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 from API.translate_api.dict_process import get_word_dict_info
 from actions.bashscripts import bash_wget
+from datapack import WirteFilePack
 
 MAIN_PATH = os.path.abspath(__file__)
 BASE_DIR = os.path.dirname(MAIN_PATH)
@@ -129,7 +130,8 @@ def create_conf_json(default: bool):
             "settings": {
                 "save_file": "",
                 "first_open": False,
-                "word_limit": 1
+                "word_limit": 1,
+                "format": ""
             }
         }
         
@@ -167,31 +169,35 @@ def check_is_folder(file_path: str):
     os.mkdir(file_path)
 
 #Md dosyasına verileri yazar
-def write_md_file (file_path: str, full_word: str):
-    word = full_word["word"]
-    translated = full_word["translated"]
-    word_dict = get_word_dict_info(word)
+def write_md_file (packs: WirteFilePack):
     save_loc = get_save_location()
-    save_folder = path_join([os.path.dirname(save_loc),"attachments"])
-    audio_link = word_dict[0]["audio"]
-    audio_name = audio_link.split("/")[-1]
-    bash_wget(save_folder, audio_link)
+    word = packs.full_word["word"]
+    translated = packs.full_word["translated"]
     
-    md_format = f"|      {word}      |       |             {translated}               |                                            |    ![[{audio_name}]]     |\n"
+    if packs.boolValue == True:
+        md_format = f"|      {word}      |       |             {translated}               |                                            |    Bulunamadı     |\n"
+
+    else:
+        save_folder = path_join([os.path.dirname(save_loc),"attachments"])
+        audio_link = packs.word_dict[0]["audio"]
+        audio_name = audio_link.split("/")[-1]
+        bash_wget(save_folder, audio_link)
+        
+        md_format = f"|      {word}      |       |             {translated}               |                                            |    ![[{audio_name}]]     |\n"
     
     with open(save_loc,"a",encoding="utf-8") as f:
         f.write(md_format)
     
 #txt mi md mi olup olmadığını kontrol eder. Txt ise basit şekilde yazar
-def write_file(file_path: str, full_word: str, date_today: str):
+def write_file(packs: WirteFilePack):
     try:
-        _,extention = os.path.splitext(file_path)
+        _,extention = os.path.splitext(packs.file_path)
         if extention == ".txt":
-            full_translated = f"{full_word["word"]} | {full_word["translated"]}"
-            with open (file_path, "a", encoding="utf-8") as f:
+            full_translated = f"{packs.full_word["word"]} | {packs.full_word["translated"]}\n"
+            with open (packs.file_path, "a", encoding="utf-8") as f:
                 f.write(full_translated)
         elif extention == ".md":
-            write_md_file(file_path, full_word)
+            write_md_file(packs)
     except Exception as e:
         raise e
 

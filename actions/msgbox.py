@@ -19,3 +19,12 @@ class WarningMess(QMessageBox):
         self.setText(f"{conf.text}")
         self.setStandardButtons(self.StandardButton.Ok)
         self.setIcon(self.Icon.Warning)
+
+class ReturnErr_Ok_No(QMessageBox):
+    def __init__(self,error):
+        self.error = error
+        super().__init__()
+        self.setWindowTitle("ERROR!")
+        self.setText(f"{self.error}")
+        self.setStandardButtons(self.StandardButton.Yes | self.StandardButton.No)
+        self.setIcon(self.Icon.Critical)

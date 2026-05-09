@@ -22,7 +22,7 @@ def get_word_dict_info(word: str):
         
         for phone in phonetics:
             if phone.get("audio"): 
-                audio_url = phone.get("audio")
+                audio_url = phone.get("audio","Bulunamadı")
                 break
             
         if audio_url:

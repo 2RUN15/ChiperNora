@@ -3,12 +3,13 @@ from PyQt6.QtCore import pyqtSignal, QObject
 from PyQt6.QtWidgets import *
 from actions.func_main import get_conf_api_json, json_read, get_current_api, write_file, get_save_location, get_datetime_today, path_join,check_is_folder
 from actions.copylisten import CopyListen
-from actions.msgbox import ReturnErr
+from actions.msgbox import ReturnErr, ReturnErr_Ok_No
 from actions.popup import TranslationPopup
 import requests
 from API.translate_api.dict_process import get_word_dict_info
 from actions.bashscripts import bash_wget
 import os
+from datapack import WirteFilePack
 
 DATE_TODAY = get_datetime_today()
 
@@ -49,18 +50,37 @@ class DeeplAPI(QObject):
             self.popup.show_at_cursor(translated)
             
             word_dict = get_word_dict_info(word)
-            folder_path = path_join([self.save_loc, ".."])
-            url = word_dict[-1]["audio"]
             
-            #Okunuşunu indirir
-            bash_wget(folder_path, url)
+            if word_dict == 404:
+                return
+            
+            packs = WirteFilePack(
+                file_path=self.save_loc,
+                full_word=full_translated,
+                date_today=DATE_TODAY,
+                word_dict= word_dict,
+                boolValue=None
+            )
 
             #Dosyaya yazar
-            write_file(self.save_loc, full_translated, DATE_TODAY)
+            write_file(packs)
+
+        except TypeError:
+            err_msg = "Sözlükte böyle bir kelime bulunamadı.\nKelimeyi sözlüğe eklemek ister misiniz ?"
+            err_msgbox = ReturnErr_Ok_No(err_msg)
+            err_msgbox.exec()
+            
+            clicked = err_msgbox.clickedButton()
+            
+            if err_msgbox.standardButton(clicked) == QMessageBox.StandardButton.Yes:
+                print("Burada")
+                packs.boolValue = True
+                write_file(packs)
             
         except Exception as e:
             err_msgboc = ReturnErr(e)
             err_msgboc.exec()
+        
 
 class GoogleAPI(QObject):
     def __init__(self):

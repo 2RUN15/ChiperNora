@@ -32,7 +32,8 @@ class CopyListen(QObject):
         if not self.is_activate:
             return
         text = self.board.text()
+        text_spilt = len(text.split())
         
-        if text and self.last_link != text:
+        if text and self.last_link != text and text_spilt == 1:
             self.last_link = text
             self.link_found.emit(text)
