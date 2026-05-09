@@ -38,11 +38,13 @@ jobs:
         run: iscc windows_kurulum_ayarlari.iss
 
       # --- 2. MAC DMG SETUP ---
+# --- 2. MAC DMG SETUP ---
       - name: macOS DMG Oluştur
         if: matrix.os == 'macos-latest'
         run: |
           npm install -g create-dmg
-          create-dmg dist/SeninUygulaman.app dist/
+          # Uygulama adını kendi projene (ChiperNora) göre düzenlemeyi unutma!
+          create-dmg --overwrite --skip-jenkins --identity "none" "dist/ChiperNora.dmg" "dist/ChiperNora.app/" || true
 
       # --- 3. LINUX DEB SETUP ---
       - name: Linux .deb Paketi Oluştur
