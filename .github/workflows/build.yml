@@ -8,6 +8,7 @@ jobs:
     name: ${{ matrix.os }} üzerinde derleniyor
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false # Bir makine çökse bile diğerleri işini bitirene kadar çalışmaya devam etsin
       matrix:
         # Kodun çalışacağı 3 farklı işletim sistemi
         os: [windows-latest, macos-latest, ubuntu-latest]
@@ -19,7 +20,7 @@ jobs:
       - name: Python Kurulumu
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10' # Kullandığın sürümü yaz
+          python-version: '3.10'
 
       - name: Gerekli Kütüphaneleri Yükle
         run: |
@@ -28,22 +29,18 @@ jobs:
           pip install -r requirements.txt
 
       - name: PyInstaller ile Klasör Olarak Derle
-        run: pyinstaller --onedir --noconsole --name "SeninUygulaman" main.py
+        run: pyinstaller --onedir --noconsole --name "ChiperNora" main.py
 
       # --- 1. WINDOWS SETUP (Inno Setup) ---
       - name: Windows Installer (.exe) Oluştur
         if: matrix.os == 'windows-latest'
-        # GitHub'ın Windows makinelerinde Inno Setup yüklü gelir.
-        # Önceden hazırladığın .iss dosyasını çalıştırarak setup'ı üretir.
         run: iscc windows_kurulum_ayarlari.iss
 
       # --- 2. MAC DMG SETUP ---
-# --- 2. MAC DMG SETUP ---
       - name: macOS DMG Oluştur
         if: matrix.os == 'macos-latest'
         run: |
           npm install -g create-dmg
-          # Uygulama adını kendi projene (ChiperNora) göre düzenlemeyi unutma!
           create-dmg --overwrite --skip-jenkins --identity "none" "dist/ChiperNora.dmg" "dist/ChiperNora.app/" || true
 
       # --- 3. LINUX DEB SETUP ---
@@ -52,7 +49,7 @@ jobs:
         run: |
           sudo apt-get install -y ruby ruby-dev rubygems build-essential
           sudo gem install --no-document fpm
-          fpm -s dir -t deb -n "SeninUygulaman" -v 1.0.0 dist/SeninUygulaman=/opt/SeninUygulaman
+          fpm -s dir -t deb -n "ChiperNora" -v 1.0.0 dist/ChiperNora=/opt/ChiperNora
 
       # --- SONUÇLARI KAYDET ---
       - name: Oluşan Setup Dosyalarını Yükle
@@ -60,6 +57,6 @@ jobs:
         with:
           name: Kurulum-Dosyalari-${{ matrix.os }}
           path: |
-            *.exe
-            *.dmg
-            *.deb
+            **/*.exe
+            **/*.dmg
+            **/*.deb
