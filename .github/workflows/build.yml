@@ -58,7 +58,7 @@ jobs:
           ln -s /Applications dist/dmg/Applications
           
           # 4. Apple'ın kendi yerel aracıyla (sertifika sormadan) DMG dosyasını paketliyoruz
-          hdiutil create -volname "ChiperNora" -srcfolder dist/dmg -ov -format UDZO "dist/ChiperNora.dmg"
+          hdiutil create -volname "ChiperNora" -srcfolder dist/dmg -ov -format UDZO "dist/ChiperNora Setup.dmg"
 
       # --- 3. LINUX DEB SETUP ---
       - name: Linux .deb Paketi Oluştur
@@ -66,7 +66,7 @@ jobs:
         run: |
           sudo apt-get install -y ruby ruby-dev rubygems build-essential
           sudo gem install --no-document fpm
-          fpm -s dir -t deb -n "ChiperNora" -v 1.0.0 dist/ChiperNora=/opt/ChiperNora
+          fpm -s dir -t deb -n "ChiperNora Setup" -v 1.0.0 dist/ChiperNora=/opt/ChiperNora
 
       # --- SONUÇLARI KAYDET ---
       - name: Oluşan Setup Dosyalarını Yükle
@@ -81,11 +81,10 @@ jobs:
         with:
                 # Yıldız (*) kullanarak farklı uzantılardaki paketleri yakalıyoruz
           files: |
-            dist/*.exe
-            dist/*.dmg
-            dist/*.deb
-            dist/*.zip
+            **/ChiperNora Setup.exe
+            **/ChiperNora Setup.dmg
+            **/ChiperNora Setup.deb
+            **/ChiperNora.exe
             dist/ChiperNora/ChiperNora.exe
-
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

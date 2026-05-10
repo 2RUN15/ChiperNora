@@ -40,7 +40,7 @@ PrivilegesRequired=lowest
 
 ; Çıktı Ayarları (Setup dosyasını script'in çalıştığı yere kaydeder)
 OutputDir=.
-OutputBaseFilename={#MyAppName}_Setup_v{#MyAppVersion}
+OutputBaseFilename=ChiperNora Setup
 SetupIconFile={#MySetupIcon}
 SolidCompression=yes
 WizardStyle=modern windows11
