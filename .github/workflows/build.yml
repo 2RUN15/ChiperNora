@@ -29,7 +29,14 @@ jobs:
           pip install -r requirements.txt
 
       - name: PyInstaller ile Klasör Olarak Derle
-        run: pyinstaller --onedir --noconsole --name "ChiperNora" main.py
+        run: |
+          if [ "${{ matrix.os }}" == "windows-latest" ]; then
+            pyinstaller --onedir --noconsole --name "ChiperNora" --icon="icons/app_icon.ico" --hidden-import="actions.func_main" --hidden-import="API" --add-data "SettingsWindow:SettingsWindow" --add-data "icons:icons" main.py
+          elif [ "${{ matrix.os }}" == "macos-latest" ]; then
+            pyinstaller --onedir --noconsole --name "ChiperNora" --icon="icons/app_icon.icns" --hidden-import="actions.func_main" --hidden-import="API" --add-data "SettingsWindow:SettingsWindow" --add-data "icons:icons" main.py
+          else
+            pyinstaller --onedir --noconsole --name "ChiperNora" --hidden-import="actions.func_main" --hidden-import="API" --add-data "SettingsWindow:SettingsWindow" --add-data "icons:icons" main.py
+          fi
 
       # --- 1. WINDOWS SETUP (Inno Setup) ---
       - name: Windows Installer (.exe) Oluştur
