@@ -26,18 +26,12 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install pyinstaller
+          pip install Pillow
           pip install -r requirements.txt
 
       - name: PyInstaller ile Klasör Olarak Derle
         shell: bash
-        run: |
-          if [ "${{ matrix.os }}" == "windows-latest" ]; then
-            pyinstaller --onedir --noconsole --name "ChiperNora" --icon="icons/app_icon.ico" --hidden-import="actions.func_main" --hidden-import="API" --add-data "SettingsWindow:SettingsWindow" --add-data "icons:icons" main.py
-          elif [ "${{ matrix.os }}" == "macos-latest" ]; then
-            pyinstaller --onedir --noconsole --name "ChiperNora" --icon="icons/app_icon.ico" --hidden-import="actions.func_main" --hidden-import="API" --add-data "SettingsWindow:SettingsWindow" --add-data "icons:icons" main.py
-          else
-            pyinstaller --onedir --noconsole --name "ChiperNora" --hidden-import="actions.func_main" --hidden-import="API" --add-data "SettingsWindow:SettingsWindow" --add-data "icons:icons" main.py
-          fi
+        run: pyinstaller --onedir --noconsole --name "ChiperNora" --icon="icons/app_icon.ico" --hidden-import="actions.func_main" --hidden-import="API" --add-data "SettingsWindow:SettingsWindow" --add-data "icons:icons" main.py
 
       # --- 1. WINDOWS SETUP (Inno Setup) ---
       - name: Windows Installer (.exe) Oluştur
@@ -73,7 +67,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Kurulum-Dosyalari-${{ matrix.os }}
-          path: |
-            dist/*.exe
-            dist/*.dmg
-            dist/*.deb
+          path: dist/
