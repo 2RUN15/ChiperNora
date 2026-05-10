@@ -16,7 +16,7 @@ class SettingsWindow(QWidget):
         self.ui.setupUi(self)
         
         #Style
-        self.style_path = get_resource_path(path_join(["SettingsWindow","style.qss"]))
+        self.style_path = get_resource_path(["SettingsWindow","style.qss"])
         self.styleqss = file_read(self.style_path)
         self.setStyleSheet(self.styleqss)
         

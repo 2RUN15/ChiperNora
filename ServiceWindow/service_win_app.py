@@ -1,7 +1,7 @@
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
 from PyQt6.QtGui import QIcon, QAction, QPixmap
-from actions.func_main import path_join, get_active_engine, get_first_open
+from actions.func_main import path_join, get_active_engine, get_first_open, get_resource_path
 from SettingsWindow.settings_window_app import SettingsWindow
 from API.translate_api.translate_app_api import DeeplAPI, GoogleAPI
 import platform
@@ -32,7 +32,7 @@ class ServiceWindow:
         self.savedata = None
         self.downmode = None
         
-        self.icon = path_join(["icons","mainico.png"])
+        self.icon = get_resource_path(["icons","mainico.png"])
         
         #TrayMenu
         self.tray = QSystemTrayIcon()
