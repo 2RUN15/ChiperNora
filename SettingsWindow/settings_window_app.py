@@ -1,7 +1,7 @@
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
 from SettingsWindow.settings_window_ui import Ui_SettingsDialog
-from actions.func_main import file_read, path_join, json_read, json_save, create_conf_json
+from actions.func_main import file_read, path_join, json_read, json_save, create_conf_json, get_resource_path
 from SettingsWindow.funcs import change_engine, re_change_engine
 from actions.msgbox import ReturnErr, WarningMess
 from actions.dialogs import chose_file
@@ -16,7 +16,7 @@ class SettingsWindow(QWidget):
         self.ui.setupUi(self)
         
         #Style
-        self.style_path = path_join(["SettingsWindow","style.qss"])
+        self.style_path = get_resource_path(path_join(["SettingsWindow","style.qss"]))
         self.styleqss = file_read(self.style_path)
         self.setStyleSheet(self.styleqss)
         
