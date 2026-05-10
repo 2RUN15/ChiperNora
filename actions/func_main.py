@@ -43,7 +43,10 @@ def file_read(file_path):
 #Base çalışma klasörünün yolunu döndürür
 def get_base_dir():
     try:
-        return os.path.join(BASE_DIR, os.pardir)
+        if getattr(sys, "frozen", False):
+            return os.path.dirname(sys.executable)
+        else:
+            return os.path.join(BASE_DIR, os.pardir)
     except Exception as e:
         raise e
 
@@ -60,6 +63,10 @@ def path_join(file_paths: list):
 def get_conf_api_json():
     try:
         file_path = path_join(["API","config.json"])
+        
+        app_dir = os.path.dirname(file_path)
+        os.makedirs(app_dir, exist_ok=True)
+        
         return file_path
     except Exception as e:
         raise e
