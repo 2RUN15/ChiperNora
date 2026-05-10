@@ -5,6 +5,7 @@ from API.translate_api.dict_process import get_word_dict_info
 from actions.bashscripts import bash_wget
 from datapack import WirteFilePack
 import platform
+import sys
 
 MAIN_PATH = os.path.abspath(__file__)
 BASE_DIR = os.path.dirname(MAIN_PATH)
@@ -145,8 +146,21 @@ def create_conf_json(default: bool):
             }
         }
         
+        if getattr(sys, 'frozen', False):
+            # .exe olarak çalışıyorsa _internal klasöründen kurtul, ana exe'nin yanına git
+            base_dir = os.path.dirname(sys.executable)
+        else:
+            # Geliştirme ortamındaysa (pycharm/vscode) proje köküne git
+            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            
+        # 2. Klasör ve dosya yollarını kesinleştirme
+        api_dir = os.path.join(base_dir, "API")
+        conf_path = os.path.join(api_dir, "config.json")
         
-        conf_path = path_join(["API","config.json"])
+        # 3. İŞTE HAYAT KURTARAN SATIR: API klasörü yoksa yarat!
+        os.makedirs(api_dir, exist_ok=True)
+
+        # 4. Klasör artık kesinlikle var, dosyayı güvenle kaydedebiliriz
         if not os.path.isfile(conf_path) or default:
             json_save(conf_path, api_conf)
         else:
