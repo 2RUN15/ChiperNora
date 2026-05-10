@@ -112,6 +112,15 @@ def get_save_location():
     except Exception as e:
         raise e
 
+def get_file_extention():
+    try:
+        file_path = get_conf_api_json()
+        read_file = json_read(file_path)
+        
+        return read_file["settings"]["format"]
+    except Exception as e:
+        raise e
+
 #Varsayılan ayarları sıfırlar
 def create_conf_json(default: bool):
     try:
@@ -164,8 +173,9 @@ def check_md_file(file_path):
 #Klasörün var olup olmadığını kontrol eder
 def check_is_folder(file_path: str):
     is_folder = os.path.isdir(file_path)
+    extention = get_file_extention()
     
-    if is_folder:
+    if is_folder or extention == ".txt":
         return
     os.mkdir(file_path)
 
