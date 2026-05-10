@@ -77,11 +77,15 @@ jobs:
           
       - name: GitHub Release Olarak Yayınla
         uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/') # Sadece bir Tag (Sürüm) atıldıysa çalışır
+        if: startsWith(github.ref, 'refs/tags/')
         with:
-          # Yayınlamak istediğin dosyaların yolu (Eğer Setup exe'si veya Zip yaptıysan burayı ona göre düzenle)
+                # Yıldız (*) kullanarak farklı uzantılardaki paketleri yakalıyoruz
           files: |
+            dist/*.exe
+            dist/*.dmg
+            dist/*.deb
+            dist/*.zip
             dist/ChiperNora/ChiperNora.exe
-            # Eğer Inno Setup ile kurulum dosyası (Output/...) üretiyorsan onun yolunu da buraya ekleyebilirsin.
+
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GitHub'ın dosyaları yükleyebilmesi için gerekli güvenlik izni
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
