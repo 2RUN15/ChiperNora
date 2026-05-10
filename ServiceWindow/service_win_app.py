@@ -20,22 +20,25 @@ def set_mac_dock_icon_visible(visible):
         except ImportError:
             pass
 
-class ServiceWindow:
+class ServiceWindow(QObject):
     def __init__(self):
         super().__init__()
         
         #DockVisible
         set_mac_dock_icon_visible(False)
         
+        #
+        QApplication.instance().setQuitOnLastWindowClosed(False)
+        
         #NoneValus
         self.settingswin = None
         self.savedata = None
         self.downmode = None
         
-        self.icon = get_resource_path(["icons","mainico.png"])
+        self.icon = get_resource_path("icons","mainico.png")
         
         #TrayMenu
-        self.tray = QSystemTrayIcon()
+        self.tray = QSystemTrayIcon(self)
         self.tray.setIcon(QIcon(self.icon))
         self.menu = QMenu()
         

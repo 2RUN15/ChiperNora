@@ -51,7 +51,7 @@ def get_base_dir():
         raise e
 
 # Sadece statik (okunur) tasarım ve resim dosyalarının yolunu bulur
-def get_resource_path(relative_path):
+def get_resource_path(*relative_path):
     try:
         if getattr(sys, "frozen", False):
             # Eğer .exe ise, PyInstaller'ın dosyaları gömdüğü _internal klasörüne git
@@ -60,7 +60,7 @@ def get_resource_path(relative_path):
             # Geliştirme aşamasındaysa, projenin kök dizinini kullan
             base_path = os.path.join(BASE_DIR, os.pardir)
             
-        return os.path.join(base_path, relative_path)
+        return os.path.join(base_path, *relative_path)
     except Exception as e:
         raise e
 
