@@ -1,7 +1,7 @@
 name: Uygulama Kurulum Dosyalarını Üret
 
 # Sadece GitHub'a kod pushladığında çalışır
-on: [push]
+# on: [push]
 
 jobs:
   build:
