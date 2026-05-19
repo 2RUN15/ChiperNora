@@ -1,7 +1,15 @@
 import deepl
 from PyQt6.QtCore import pyqtSignal, QObject
 from PyQt6.QtWidgets import *
-from actions.func_main import get_conf_api_json, json_read, get_current_api, write_file, get_save_location, get_datetime_today, path_join,check_is_folder
+from actions.func_main import (
+    get_conf_api_json,
+    json_read, get_current_api,
+    write_file,
+    get_save_location,
+    get_datetime_today,
+    path_join,
+    check_is_folder,
+    get_active_engine)
 from actions.copylisten import CopyListen
 from actions.msgbox import ReturnErr, ReturnErr_Ok_No
 from actions.popup import TranslationPopup
@@ -13,16 +21,37 @@ from datapack import WirteFilePack
 
 DATE_TODAY = get_datetime_today()
 
-class DeeplAPI(QObject):
+class TranslateAPI(QObject):
     def __init__(self):
         super().__init__()
         
         self.auth_key = get_current_api()
         self.save_loc = get_save_location()
+        self.active_engine = get_active_engine()
+        
+        if self.active_engine == "google":   
+            self.url = f"https://translation.googleapis.com/language/translate/v2?key={self.auth_key}"
+            self.payload = {
+                "q": [],
+                "target": "tr",
+                "source": "en"
+            }
+
+        elif self.active_engine == "deepl":
+            self.url = "https://api-free.deepl.com/v2/translate"
+            self.payload = {
+                "text": [],
+                "target_lang": "TR",
+                "source_lang": "EN",
+                "formality": "default"
+            }
+            self.headers = {
+                "Authorization": f"DeepL-Auth-Key {self.auth_key}",
+                "Content-Type": "application/json"
+            }        
+        
         self.save_folder = path_join([os.path.dirname(self.save_loc),"attachments"])
         check_is_folder(self.save_folder)
-        
-        self.translator = deepl.Translator(self.auth_key)
         
         #Kopyalanan sözcükleri dinleme
         self.worker = CopyListen()
@@ -41,11 +70,16 @@ class DeeplAPI(QObject):
         #Ayarları günceller
         self.auth_key = get_current_api()
         self.save_loc = get_save_location()
+        self.active_engine = get_active_engine()
     
     def word_found(self, word):
         #Kelimeyi çevirir
         try:
-            translated = self.translator.translate_text(word, target_lang="TR").text
+            if self.active_engine == "deepl":
+                translated = self.translate_deepl(word)
+            elif self.active_engine == "google":
+                translated = self.translate_google(word)
+            
             full_translated = {"word": word, "translated": translated}
             self.popup.show_at_cursor(translated)
             
@@ -73,70 +107,28 @@ class DeeplAPI(QObject):
             clicked = err_msgbox.clickedButton()
             
             if err_msgbox.standardButton(clicked) == QMessageBox.StandardButton.Yes:
-                print("Burada")
                 packs.boolValue = True
                 write_file(packs)
             
         except Exception as e:
             err_msgboc = ReturnErr(e)
             err_msgboc.exec()
-        
-
-class GoogleAPI(QObject):
-    def __init__(self):
-        super().__init__()
-        
-        self.auth_key = get_current_api()
-        self.save_loc = get_save_location()
-        
-        self.is_activate = True
-        
-        self.popup = TranslationPopup()
-        
-        self.url = "https://translation.googleapis.com/language/translate/v2"
-        self.payload = {
-            "key": self.auth_key,
-            "q": "",
-            "target": "tr",
-            "source": "en"
-        }
-        
-        self.worker = CopyListen()
-        self.worker.link_found.connect(self.word_found)
-        self.worker.start()
     
-    def start(self):
-        if not self.is_activate:
-            self.worker.start()
-            self.is_activate = True
-    
-    def stop(self):
-        if self.is_activate:
-            self.worker.stop()
-            self.is_activate = False
-    
-    def update_settings(self):
-        self.auth_key = get_current_api()
-        self.save_loc = get_save_location()
-    
-    def word_found(self, word):
-        try:
-            self.payload["q"] = word
+    def translate_deepl(self, word: str) -> str:
+        self.payload["text"] = [word]
+        response = requests.post(self.url, json=self.payload,headers=self.headers)
+        if response.status_code == 200:
+            response_json = response.json()
+            translated = response_json["translations"][0]["text"]
             
-            response = requests.post(self.url, self.payload)
+            return translated
+    
+    def translate_google(self, word: str) -> str:
+        self.payload["q"] = [word]
+        response = requests.post(self.url, json=self.payload)
+        if response.status_code == 200:
+            response_json = response.json()
+            translated = response_json["data"]["translations"][0]["translatedText"]
             
-            if response.status_code == 200:
-                result = response.json()
-                translated_text = result["data"]["translations"][0]["translatedText"]
-                self.popup.show_at_cursor(translated_text)
-                
-                full_translate = f"Google | {word} | {translated_text}\n"
-                
-                write_file(self.save_loc, full_translate)
-            else:
-                err_msgbox = ReturnErr(response.text)
-                err_msgbox.exec()
+            return translated
         
-        except Exception as e:
-            err_msgbox = ReturnErr(e)
-            err_msgbox.exec()

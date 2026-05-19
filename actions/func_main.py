@@ -138,8 +138,21 @@ def get_file_extention():
     try:
         file_path = get_conf_api_json()
         read_file = json_read(file_path)
+        _,extention = os.path.splitext(read_file["settings"]["save_file"])
         
-        return read_file["settings"]["format"]
+        return extention
+    except Exception as e:
+        raise e
+
+def get_worker_mode():
+    try:
+        file_path = get_conf_api_json()
+        read_file = json_read(file_path)
+        
+        mode = read_file["settings"]["mode"]
+        
+        return mode
+
     except Exception as e:
         raise e
 
@@ -163,7 +176,7 @@ def create_conf_json(default: bool):
                 "save_file": "",
                 "first_open": False,
                 "word_limit": 1,
-                "format": ""
+                "mode": ""
             }
         }
         

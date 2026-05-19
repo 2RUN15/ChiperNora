@@ -1,7 +1,7 @@
 name: Uygulama Kurulum Dosyalarını Üret
 
 # Sadece GitHub'a kod pushladığında çalışır
-on:
+# on:
   push:
     branches: [ "main" ]
     tags:
@@ -84,7 +84,5 @@ jobs:
             **/ChiperNora Setup.exe
             **/ChiperNora Setup.dmg
             **/ChiperNora Setup.deb
-            **/ChiperNora.exe
-            dist/ChiperNora/ChiperNora.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

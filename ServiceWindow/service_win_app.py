@@ -1,9 +1,11 @@
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
 from PyQt6.QtGui import QIcon, QAction, QPixmap
-from actions.func_main import path_join, get_active_engine, get_first_open, get_resource_path
+from actions.func_main import get_first_open, get_resource_path, get_worker_mode
+from actions.system_permissions import check_permissions
 from SettingsWindow.settings_window_app import SettingsWindow
-from API.translate_api.translate_app_api import DeeplAPI, GoogleAPI
+from API.translate_api.translate_app_api import TranslateAPI
+from VisualBased.visual_based_app import VisualBased
 import platform
 
 #Python ikonunu kaldırır
@@ -27,7 +29,9 @@ class ServiceWindow(QObject):
         #DockVisible
         set_mac_dock_icon_visible(False)
         
-        #
+        #CheckPermissions
+        check_permissions()
+
         QApplication.instance().setQuitOnLastWindowClosed(False)
         
         #NoneValus
@@ -77,21 +81,16 @@ class ServiceWindow(QObject):
         if not self.first_open:
             self.open_settings()
         else:
-            self.active_engine = get_active_engine()
+            self.worker_mode = get_worker_mode()
             self.start_worker()
         
     def _on_settings_closed(self):
         self.settingswin = None
         
     def app_stat(self, boolval):
-        if boolval and self.active_engine == "deepl":
+        if boolval:
             self.worker.start()
-        elif not boolval and self.active_engine == "deepl":
-            self.worker.stop()
-        
-        if boolval and self.active_engine == "google":
-            self.worker.start()
-        elif not boolval and self.active_engine == "google":
+        elif not boolval:
             self.worker.stop()
     
     def open_settings(self):
@@ -120,17 +119,15 @@ class ServiceWindow(QObject):
     
     def change_settings(self, boolValue):
         if boolValue:
-            self.active_engine = get_active_engine()
+            self.worker_mode = get_worker_mode()
             self.start_worker()
 
     def start_worker(self):
         if hasattr(self, "worker") and self.worker:
             self.worker.stop()
 
-        if self.active_engine == "deepl":
-            self.worker = DeeplAPI()
-        elif self.active_engine == "google":
-            self.worker = GoogleAPI()
+        if self.worker_mode == "tb":
+            self.worker = TranslateAPI()
 
         self.worker.update_settings()
         self.worker.start()
