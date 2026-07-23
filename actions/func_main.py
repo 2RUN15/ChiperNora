@@ -176,7 +176,8 @@ def create_conf_json(default: bool):
                 "save_file": "",
                 "first_open": False,
                 "word_limit": 1,
-                "mode": ""
+                "mode": "",
+                "coordinates": {}
             }
         }
         
@@ -242,7 +243,7 @@ def write_md_file (packs: WirteFilePack):
         audio_name = audio_link.split("/")[-1]
         bash_wget(save_folder, audio_link)
         
-        md_format = f"|      {word}      |       |             {translated}               |                                            |    ![[{audio_name}]]     |\n"
+        md_format = f"|    **{word}**    |       |             {translated}               |                                            |    ![[{audio_name}]]     |\n"
     
     with open(save_loc,"a",encoding="utf-8") as f:
         f.write(md_format)
@@ -265,3 +266,23 @@ def get_datetime_today():
     today = datetime.today()
     date = f"{today.year}-{today.month}-{today.day}"
     return date
+
+def save_coordinates(coordinates: dict):
+    try:
+        file_path = get_conf_api_json()
+        read_file = json_read(file_path)
+        
+        read_file["settings"]["coordinates"] = coordinates
+        json_save(file_path, read_file)
+    
+    except Exception as e:
+        raise e
+
+def get_coordinates():
+    try:
+        file_path = get_conf_api_json()
+        read_file = json_read(file_path)
+        
+        return read_file["settings"]["coordinates"]
+    except Exception as e:
+        raise e

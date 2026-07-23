@@ -1,24 +1,31 @@
 from pynput import keyboard
-from PyQt6.QtCore import QObject
+from PyQt6.QtCore import QObject, pyqtSignal
+from VisualBased.get_snipping import SnippingWidget
+from actions.func_main import get_coordinates
 
 class VisualBased(QObject):
+    snipiing_screen_open_signal = pyqtSignal(bool)
+    
     def __init__(self):
         super().__init__()
-        
-        self.hotkeys = {
-            '<cmd>+<shift>+t': self.trigger_translation
-        }
-        
+
+        self.hotkeys = {"<ctrl>+<shift>+t": self.trigger_process}
+
         self.listener = keyboard.GlobalHotKeys(self.hotkeys)
         
+        self.coordinates = get_coordinates()
+
     def start(self):
         self.listener.start()
 
     def stop(self):
         self.listener.stop()
-    
-    def trigger_translation():
-        print("Kısayol yakalandı! Ekran görüntüsü alma ve OCR işlemi başlatılıyor...")
+        
+        if self.listener.is_alive():
+            self.listener.join()
 
-triggerr = VisualBased()
-triggerr.start()
+    def update_settings(self):
+        self.coordinates = get_coordinates()
+
+    def trigger_process(self):
+        self.snipiing_screen_open_signal.emit(True)

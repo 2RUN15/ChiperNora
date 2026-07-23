@@ -6,6 +6,7 @@ from actions.system_permissions import check_permissions
 from SettingsWindow.settings_window_app import SettingsWindow
 from API.translate_api.translate_app_api import TranslateAPI
 from VisualBased.visual_based_app import VisualBased
+from VisualBased.get_snipping import SnippingWidget
 import platform
 
 #Python ikonunu kaldırır
@@ -95,7 +96,7 @@ class ServiceWindow(QObject):
     
     def open_settings(self):
         set_mac_dock_icon_visible(True)
-        if hasattr(self, "worker") and self.worker:         
+        if hasattr(self, "worker") and self.worker: 
             self.worker.stop()
         if hasattr(self, "settingswin") and self.settingswin is not None:
             self.settingswin.activateWindow()
@@ -114,20 +115,39 @@ class ServiceWindow(QObject):
     def _cloesd_settings(self):
         set_mac_dock_icon_visible(False)
         self.settingswin = None
-        if hasattr(self, "worker") and self.worker:         
-            self.worker.start()
+        if hasattr(self, "worker") and self.worker:
+            self.start_worker()
     
     def change_settings(self, boolValue):
         if boolValue:
             self.worker_mode = get_worker_mode()
-            self.start_worker()
+            self.worker = VisualBased()
 
     def start_worker(self):
-        if hasattr(self, "worker") and self.worker:
-            self.worker.stop()
+        try:
+            
+            if hasattr(self, "worker") and self.worker:
+                self.worker.stop()
 
-        if self.worker_mode == "tb":
-            self.worker = TranslateAPI()
+            if self.worker_mode == "tb":
+                self.worker = TranslateAPI()
+            elif self.worker_mode == "vb":
+                self.worker = VisualBased()
+                self.worker.snipiing_screen_open_signal.connect(self.show_sniping_screen)
 
-        self.worker.update_settings()
-        self.worker.start()
+            self.worker.update_settings()
+            self.worker.start()
+        
+        except Exception as e:
+            print(f"HATA {e}")
+
+    def show_sniping_screen(self, boolValue):
+        if boolValue:
+            self.snipping_widget = SnippingWidget()
+            
+            self.snipping_widget.coordinates_selected_signal.connect(self.get_cordinates)
+            
+            self.snipping_widget.show()
+    
+    def get_cordinates(self, cordinates):
+        print(cordinates)
